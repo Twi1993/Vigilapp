@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { HourConfig } from "../data/hours";
 import { TemplarCross } from "./TemplarCross";
 import { CandleFlame } from "./CandleFlame";
@@ -10,6 +11,11 @@ interface HourScreenProps {
 export function HourScreen({ hourConfig, content }: HourScreenProps) {
   const { name, greeting, colors } = hourConfig;
   const isVigil = name === "VIGIL";
+    const isNone = name === "NONE";
+  const [answerRevealed, setAnswerRevealed] = useState(false);
+  useEffect(() => {
+  setAnswerRevealed(false);
+}, [name]);
 
   return (
     <div
@@ -70,7 +76,18 @@ export function HourScreen({ hourConfig, content }: HourScreenProps) {
               lineHeight: "1.8",
             }}
           >
-            {content}
+            {isNone ? (
+  <>
+    <span>{content.split("Answer:")[0].trim()}</span>
+    {answerRevealed && (
+      <span style={{ opacity: 0.7, marginTop: "1rem", display: "block" }}>
+        Answer: {content.split("Answer:")[1].trim()}
+      </span>
+    )}
+  </>
+) : (
+  content
+)}
           </div>
         )}
 
@@ -91,18 +108,23 @@ export function HourScreen({ hourConfig, content }: HourScreenProps) {
       {!isVigil && (
         <div className="w-full flex justify-center pb-4">
           <button
-            className="px-6 md:px-8 py-2.5 md:py-3 tracking-wide uppercase text-xs md:text-sm transition-all duration-300 hover:opacity-80 border-2 hover:scale-105"
-            style={{
-              backgroundColor: "transparent",
-              borderColor: colors.accent,
-              color: colors.accent,
-              fontFamily: "'Inter', sans-serif",
-              fontWeight: 600,
-              letterSpacing: "0.15em",
-            }}
-          >
-            Acknowledged
-          </button>
+  className="px-6 md:px-8 py-2.5 md:py-3 tracking-wide uppercase text-xs md:text-sm transition-all duration-300 hover:opacity-80 border-2 hover:scale-105"
+  style={{
+    backgroundColor: "transparent",
+    borderColor: colors.accent,
+    color: colors.accent,
+    fontFamily: "'Inter', sans-serif",
+    fontWeight: 600,
+    letterSpacing: "0.15em",
+  }}
+  onClick={() => {
+    if (isNone && !answerRevealed) {
+      setAnswerRevealed(true);
+    }
+  }}
+>
+  {isNone && !answerRevealed ? "Reveal Answer" : "Acknowledged"}
+</button>
         </div>
       )}
 
