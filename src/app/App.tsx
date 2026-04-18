@@ -32,7 +32,7 @@ export default function App() {
   // Toggle dev mode with keyboard shortcut (Ctrl/Cmd + D)
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "d") {
+      if ((e.ctrlKey || e.metaKey) && e.key === "d" && import.meta.env.DEV) {
         e.preventDefault();
         setDevMode((prev) => !prev);
       }
