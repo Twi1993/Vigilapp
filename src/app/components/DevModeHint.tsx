@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 export function DevModeHint() {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {

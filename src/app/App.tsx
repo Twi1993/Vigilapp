@@ -53,7 +53,6 @@ export default function App() {
   return (
     <>
       <HourScreen hourConfig={currentHour} content={content} />
-      {!devMode && <DevModeHint />}
       {devMode && (
         <HourTester
           onHourSelect={handleHourSelect}
