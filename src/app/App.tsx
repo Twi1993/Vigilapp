@@ -4,12 +4,16 @@ import { HourScreen } from "./components/HourScreen";
 import { HourTester } from "./components/HourTester";
 import { DevModeHint } from "./components/DevModeHint";
 import { SettingsScreen } from "./components/SettingsScreen";
+import { OnboardingScreen } from "./components/OnboardingScreen";
 
 export default function App() {
   const [currentHour, setCurrentHour] = useState(() => getCurrentHour());
   const [content, setContent] = useState(() => getDailyContent(currentHour));
   const [devMode, setDevMode] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(
+  () => localStorage.getItem("vigil_onboarded") !== "true"
+);
 
   useEffect(() => {
     // Set document title
@@ -52,16 +56,28 @@ export default function App() {
     }
   };
 
-  return (
-    <>
+return (
+  <>
     <HourScreen 
-  hourConfig={currentHour} 
-  content={content} 
-  onSettingsOpen={() => setShowSettings(true)} 
-/>
-{showSettings && (
-  <SettingsScreen onClose={() => setShowSettings(false)} />
-)}
-    </>
-  );
+      hourConfig={currentHour} 
+      content={content} 
+      onSettingsOpen={() => setShowSettings(true)} 
+      />
+    {showOnboarding && (
+      <OnboardingScreen 
+        onComplete={() => setShowOnboarding(false)}
+        colors={currentHour.colors}
+      />
+    )}
+    {showSettings && (
+      <SettingsScreen onClose={() => setShowSettings(false)} />
+    )}
+    {devMode && (
+      <HourTester
+        onHourSelect={handleHourSelect}
+        currentHourName={currentHour.name}
+      />
+    )}
+  </>
+);
 }
