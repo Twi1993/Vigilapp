@@ -3,11 +3,13 @@ import { getCurrentHour, getDailyContent, HOURS } from "./data/hours";
 import { HourScreen } from "./components/HourScreen";
 import { HourTester } from "./components/HourTester";
 import { DevModeHint } from "./components/DevModeHint";
+import { SettingsScreen } from "./components/SettingsScreen";
 
 export default function App() {
   const [currentHour, setCurrentHour] = useState(() => getCurrentHour());
   const [content, setContent] = useState(() => getDailyContent(currentHour));
   const [devMode, setDevMode] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     // Set document title
@@ -52,13 +54,14 @@ export default function App() {
 
   return (
     <>
-      <HourScreen hourConfig={currentHour} content={content} />
-      {devMode && (
-        <HourTester
-          onHourSelect={handleHourSelect}
-          currentHourName={currentHour.name}
-        />
-      )}
+    <HourScreen 
+  hourConfig={currentHour} 
+  content={content} 
+  onSettingsOpen={() => setShowSettings(true)} 
+/>
+{showSettings && (
+  <SettingsScreen onClose={() => setShowSettings(false)} />
+)}
     </>
   );
 }

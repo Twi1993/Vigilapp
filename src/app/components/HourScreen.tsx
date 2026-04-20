@@ -6,9 +6,10 @@ import { CandleFlame } from "./CandleFlame";
 interface HourScreenProps {
   hourConfig: HourConfig;
   content: string;
+  onSettingsOpen: () => void;
 }
 
-export function HourScreen({ hourConfig, content }: HourScreenProps) {
+export function HourScreen({ hourConfig, content, onSettingsOpen }: HourScreenProps) {
   const { name, greeting, colors } = hourConfig;
   const isVigil = name === "VIGIL";
     const isNone = name === "NONE";
@@ -19,7 +20,7 @@ export function HourScreen({ hourConfig, content }: HourScreenProps) {
 
   return (
     <div
-      className="min-h-screen w-full flex flex-col items-center justify-between px-6 py-8 transition-colors duration-1000"
+      className="relative min-h-screen w-full flex flex-col items-center justify-between px-6 py-8 transition-colors duration-1000"
       style={{
         backgroundColor: colors.background,
         color: colors.text,
@@ -131,6 +132,7 @@ export function HourScreen({ hourConfig, content }: HourScreenProps) {
       {/* Settings icon - subtle, top right */}
       <div className="absolute top-8 right-6">
         <button
+        onClick={onSettingsOpen}
           className="opacity-30 hover:opacity-60 transition-opacity"
           style={{ color: colors.text }}
           aria-label="Settings"
