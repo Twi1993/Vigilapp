@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { HourConfig } from "../data/hours";
 import { TemplarCross } from "./TemplarCross";
 import { CandleFlame } from "./CandleFlame";
+import { App } from '@capacitor/app';
 
 interface HourScreenProps {
   hourConfig: HourConfig;
@@ -118,11 +119,13 @@ export function HourScreen({ hourConfig, content, onSettingsOpen }: HourScreenPr
     fontWeight: 600,
     letterSpacing: "0.15em",
   }}
-  onClick={() => {
-    if (isNone && !answerRevealed) {
-      setAnswerRevealed(true);
-    }
-  }}
+ onClick={async () => {
+  if (isNone && !answerRevealed) {
+    setAnswerRevealed(true);
+  } else {
+    await App.minimizeApp();
+  }
+}}
 >
   {isNone && !answerRevealed ? "Reveal Answer" : "Acknowledged"}
 </button>

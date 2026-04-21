@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Vigil+</string>
+    <string name="title_activity_main">Vigil+</string>
+    <string name="package_name">com.vigilstudios.vigilplus</string>
+    <string name="custom_url_scheme">com.vigilstudios.vigilplus</string>
+</resources>
