@@ -6,6 +6,7 @@ import { DevModeHint } from "./components/DevModeHint";
 import { SettingsScreen } from "./components/SettingsScreen";
 import { OnboardingScreen } from "./components/OnboardingScreen";
 import { FirebaseMessaging } from '@capacitor-firebase/messaging';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 export default function App() {
   const [currentHour, setCurrentHour] = useState(() => getCurrentHour());
@@ -28,8 +29,37 @@ export default function App() {
     console.log('FCM Token:', token);
   };
 
+  const scheduleDailyNotifications = async () => {
+    await LocalNotifications.requestPermissions();
+    await LocalNotifications.cancel({ notifications: await LocalNotifications.getPending().then(p => p.notifications) });
+
+    const notifications = [
+      { id: 1, hour: 5,  title: 'Lauds', body: 'The morning watch begins. Rise and pray.' },
+      { id: 2, hour: 6,  title: 'Prime', body: 'Consecrate the first hour to God.' },
+      { id: 3, hour: 9,  title: 'Terce', body: 'The third hour. Gird yourself for the day.' },
+      { id: 4, hour: 12, title: 'Sext', body: 'Midday. Pause and recollect.' },
+      { id: 5, hour: 15, title: 'None', body: 'The ninth hour. Hold the line.' },
+      { id: 6, hour: 18, title: 'Vespers', body: 'Evening has come. Examine the day.' },
+      { id: 7, hour: 21, title: 'Compline', body: 'The night office. Rest is earned.' },
+    ];
+
+    const scheduled = notifications.map(n => ({
+      id: n.id,
+      title: n.title,
+      body: n.body,
+      schedule: { on: { hour: n.hour, minute: 0 }, repeats: true },
+      sound: undefined,
+      attachments: undefined,
+      actionTypeId: '',
+      extra: null,
+    }));
+
+    await LocalNotifications.schedule({ notifications: scheduled });
+  };
+
   useEffect(() => {
     initPushNotifications();
+    scheduleDailyNotifications();
   }, []);
 
   useEffect(() => {
