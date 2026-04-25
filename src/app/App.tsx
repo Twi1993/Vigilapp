@@ -5,6 +5,7 @@ import { HourTester } from "./components/HourTester";
 import { DevModeHint } from "./components/DevModeHint";
 import { SettingsScreen } from "./components/SettingsScreen";
 import { OnboardingScreen } from "./components/OnboardingScreen";
+import { FirebaseMessaging } from '@capacitor-firebase/messaging';
 
 export default function App() {
   const [currentHour, setCurrentHour] = useState(() => getCurrentHour());
@@ -12,16 +13,30 @@ export default function App() {
   const [devMode, setDevMode] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(
-  () => localStorage.getItem("vigil_onboarded") !== "true"
-);
+    () => localStorage.getItem("vigil_onboarded") !== "true"
+  );
+
+  const initPushNotifications = async () => {
+    await FirebaseMessaging.requestPermissions();
+    await FirebaseMessaging.addListener('notificationReceived', (event) => {
+      console.log('Notification received:', event);
+    });
+    await FirebaseMessaging.addListener('notificationActionPerformed', (event) => {
+      console.log('Notification action performed:', event);
+    });
+    const { token } = await FirebaseMessaging.getToken();
+    console.log('FCM Token:', token);
+  };
 
   useEffect(() => {
-    // Set document title
+    initPushNotifications();
+  }, []);
+
+  useEffect(() => {
     document.title = `VIGIL✛ — ${currentHour.name}`;
   }, [currentHour]);
 
   useEffect(() => {
-    // Update hour every minute to catch transitions
     const interval = setInterval(() => {
       if (!devMode) {
         const newHour = getCurrentHour();
@@ -30,12 +45,10 @@ export default function App() {
           setContent(getDailyContent(newHour));
         }
       }
-    }, 60000); // Check every minute
-
+    }, 60000);
     return () => clearInterval(interval);
   }, [currentHour, devMode]);
 
-  // Toggle dev mode with keyboard shortcut (Ctrl/Cmd + D)
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "d" && import.meta.env.DEV) {
@@ -43,7 +56,6 @@ export default function App() {
         setDevMode((prev) => !prev);
       }
     };
-
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, []);
@@ -56,28 +68,28 @@ export default function App() {
     }
   };
 
-return (
-  <>
-    <HourScreen 
-      hourConfig={currentHour} 
-      content={content} 
-      onSettingsOpen={() => setShowSettings(true)} 
+  return (
+    <>
+      <HourScreen
+        hourConfig={currentHour}
+        content={content}
+        onSettingsOpen={() => setShowSettings(true)}
       />
-    {showOnboarding && (
-      <OnboardingScreen 
-        onComplete={() => setShowOnboarding(false)}
-        colors={currentHour.colors}
-      />
-    )}
-    {showSettings && (
-      <SettingsScreen onClose={() => setShowSettings(false)} />
-    )}
-    {devMode && (
-      <HourTester
-        onHourSelect={handleHourSelect}
-        currentHourName={currentHour.name}
-      />
-    )}
-  </>
-);
+      {showOnboarding && (
+        <OnboardingScreen
+          onComplete={() => setShowOnboarding(false)}
+          colors={currentHour.colors}
+        />
+      )}
+      {showSettings && (
+        <SettingsScreen onClose={() => setShowSettings(false)} />
+      )}
+      {devMode && (
+        <HourTester
+          onHourSelect={handleHourSelect}
+          currentHourName={currentHour.name}
+        />
+      )}
+    </>
+  );
 }
